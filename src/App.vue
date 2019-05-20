@@ -1,31 +1,72 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+  <v-app>
+    
+
+    <v-content>
+       <v-toolbar color="purple" dark>
+    <v-toolbar-side-icon></v-toolbar-side-icon>
+    <v-toolbar-title>Depresso </v-toolbar-title>
+    <v-spacer></v-spacer>
+    <v-toolbar-items class="hidden-sm-and-down">
+      
+      
+      <v-btn flat @click="signin" v-if="!isLoggedIn"> SignIn</v-btn>
+      <v-btn flat @click="register" v-if="!isLoggedIn">  Register </v-btn>
+      <v-btn flat v-if="isLoggedIn" @click="motivation"> CREATE MOTIVATION </v-btn>
+      <v-btn flat v-if="isLoggedIn"  @click="logout()">  Logout </v-btn>
+      
+     
+    </v-toolbar-items>
+  </v-toolbar>
+        <router-view/>
+    </v-content>
+  </v-app>
 </template>
 
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-#nav {
-  padding: 30px;
-}
+<script>
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
+import {mapGetters, mapActions} from 'vuex'
+export default {
 
-#nav a.router-link-exact-active {
-  color: #42b983;
+  name: 'App',
+  components: {
+    
+  },
+  data () {
+    return {
+    
+     
+      //
+    }
+
+  },
+  computed:{
+     ...mapGetters('auth/',['isLoggedIn']),
+
+  },
+
+ 
+    
+  
+  methods:{
+    register(){
+      this.$router.push('/register');
+    },
+    signin(){
+      this.$router.push('/signin');
+
+    },
+    motivation(){
+      if(isLoggedIn){
+      this.$router.push('/create')
+      
+      }
+      else{
+        $this.router.push('/login')
+      }
+    },
+   ... mapActions('auth/',['logout'])
+  
+  }
 }
-</style>
+</script>

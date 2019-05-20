@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
+import Register from './views/Register.vue'
+import SignIn from './views/SignIn.vue'
+import MotivationCreate from './views/MotivationCreate.vue'
 
 Vue.use(Router)
 
@@ -10,6 +13,21 @@ export default new Router({
       path: '/',
       name: 'home',
       component: Home
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: Register
+    },
+    {
+      path: '/signin',
+      name: 'signin',
+      component: SignIn
+    },
+    {
+      path: '/create',
+      name: 'create',
+      component: MotivationCreate
     },
     {
       path: '/about',
