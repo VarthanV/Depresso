@@ -1,3 +1,3 @@
-# depresso
+# Depresso
 
 Second Vue JS project which serves as an outlet for Depressed People
