@@ -4,6 +4,7 @@ import Home from './views/Home.vue'
 import Register from './views/Register.vue'
 import SignIn from './views/SignIn.vue'
 import MotivationCreate from './views/MotivationCreate.vue'
+import MotivationDetail from './views/MotivationDetail.vue'
 
 Vue.use(Router)
 
@@ -28,6 +29,11 @@ export default new Router({
       path: '/create',
       name: 'create',
       component: MotivationCreate
+    },
+    {
+      path: '/motivation/:id',
+      name: 'detail',
+      component: MotivationDetail
     },
     {
       path: '/about',
