@@ -6,10 +6,10 @@
     <hr style="border:none;">
     <div id="content" style="padding:20px; font-size:15px;  margin-left:160px;" v-html="content"></div>
     <div id="likesection" style="text-align:left; margin-left:150px;">
-      <v-btn flat icon color="blue lighten-2" v-if="isliked">
+      <v-btn flat icon color="blue lighten-2" v-if="isliked" @click="like">
         <v-icon>thumb_up</v-icon>
       </v-btn>
-      <v-btn flat icon color="grey" v-else>
+      <v-btn flat icon color="grey" v-else @click="like">
         <v-icon>thumb_up</v-icon>
       </v-btn>
       <span style="margin-left:0px;">{{likeCount}}</span>
@@ -55,7 +55,7 @@ export default {
       name: "",
       title: "",
       author: "",
-      isliked:false,
+      isliked: false,
       editor: ClassicEditor,
       content: "",
 
@@ -69,7 +69,7 @@ export default {
     commentCount() {
       return this.comments.length;
     },
-    likeCount(){
+    likeCount() {
       return this.likes.length;
     }
   },
@@ -80,53 +80,48 @@ export default {
       .get()
       .then(snapshot => {
         snapshot.forEach(doc => {
-          (this.title = doc.data().title), (this.content = doc.data().content)
-         var temp=doc.data().likes
-         temp.forEach(member =>{
-           this.likes.push(member);
-           console.log(this.likes);
-           if (this.likes.includes(firebase.auth().currentUser.email)){
-             this.isliked=true;
-           }
-         })
+          (this.title = doc.data().title), (this.content = doc.data().content);
+          var temp = doc.data().likes;
+          temp.forEach(member => {
+            this.likes.push(member);
+            console.log(this.likes);
+            if (this.likes.includes(firebase.auth().currentUser.email)) {
+              this.isliked = true;
+            }
+          });
 
-          
-           
           db.collection("profile")
             .where("email", "==", doc.data().author)
             .get()
             .then(snapshot => {
               snapshot.forEach(data => {
                 this.author = data.data().name;
-                
               });
             });
 
           //Comments section
           db.collection("motivations")
             .doc(doc.id)
-            .collection("comments").orderBy('created')
+            .collection("comments")
+            .orderBy("created")
             .get()
             .then(snapshots => {
-              
-                snapshots.docs.forEach(data => {
-                  db.collection("profile")
-                    .where("email", "==", data.data().author)
-                    .get()
-                    .then(snapshot => {
-                      snapshot.forEach(docs => {
-                        var comm = {
-                          id: data.data().id,
-                          content: data.data().content,
-                          author: docs.data().name
-                          //: moment( new Date(docs.data().created *1000)).tz('Asia/Kolkata').format('MMMM Do YYYY, h:mm:ss a')
-                        };
-                        this.comments.push(comm);
-                      });
-                      
+              snapshots.docs.forEach(data => {
+                db.collection("profile")
+                  .where("email", "==", data.data().author)
+                  .get()
+                  .then(snapshot => {
+                    snapshot.forEach(docs => {
+                      var comm = {
+                        id: data.data().id,
+                        content: data.data().content,
+                        author: docs.data().name
+                        //: moment( new Date(docs.data().created *1000)).tz('Asia/Kolkata').format('MMMM Do YYYY, h:mm:ss a')
+                      };
+                      this.comments.push(comm);
                     });
-                })
-            
+                  });
+              });
             });
         });
       });
@@ -136,20 +131,30 @@ export default {
     console.log(this.id);
   },
   methods: {
-
-like(){
-  if(firebase.auth().currentUser.email == undefined){
-    swal("Please login to like")
-    router.push('login/')
-  }
-  else{
-    var user =firebase.auth().currentUser.email;
-    if(user in likes){
-
-    }
-  }
-
-},
+    like() {
+      if (firebase.auth().currentUser.email == undefined) {
+        swal("Please login to like");
+        router.push("login/");
+      } else {
+        var user = firebase.auth().currentUser.email;
+        if (this.likes.includes(user)) {
+          var index = this.likes.indexOf(user);
+          this.likes.splice(index, 1);
+          var db = firebase.firestore();
+          db.collection("motivations")
+            .doc(this.id)
+            .update({ likes: this.likes });
+          this.isliked = false;
+        } else {
+          this.likes.push(user);
+          var db = firebase.firestore();
+          db.collection("motivations")
+            .doc(this.id)
+            .update({ likes: this.likes });
+          this.isliked = true;
+        }
+      }
+    },
 
     postComment() {
       if (!firebase.auth().currentUser) {
